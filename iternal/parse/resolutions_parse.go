@@ -13,7 +13,8 @@ import (
 )
 
 const WebsiteURL = "https://iacs.org.uk"
-const ResolutionsURL = "https://iacs.org.uk/resolutions"
+
+//const ResolutionsURL = "https://iacs.org.uk/resolutions"
 
 func ResolutionsParse(ctx context.Context) ([]string, error) {
 	subsections, err := getSideMenuLinks(ctx, ResolutionsURL, ResolutionsURL)
