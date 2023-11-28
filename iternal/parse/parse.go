@@ -28,7 +28,7 @@ func GetResolutions() ([]entities.File, error) {
 	}
 	values := currentURL.Query()
 	files := make([]entities.File, 0)
-	for section := 1; section <= 100; section++ {
+	for section := 10; section <= 11; section++ {
 		values.Set("sections", strconv.Itoa(section))
 		size := len(files)
 		for page := 1; ; page++ {
@@ -61,7 +61,7 @@ func GetProcedures() ([]entities.File, error) {
 		return nil, err
 	}
 	logger.InfoLogger.Printf("Files collected in procedures: %d\n", len(nodes))
-	return nodesToFiles(nodes), nil
+	return nodesToFiles(nodes, 1), nil
 }
 
 func GetPositionPapers() ([]entities.File, error) {
@@ -77,15 +77,15 @@ func GetPositionPapers() ([]entities.File, error) {
 		return nil, err
 	}
 	logger.InfoLogger.Printf("Files collected in position papers: %d\n", len(nodes))
-	return nodesToFiles(nodes), nil
+	return nodesToFiles(nodes, 3), nil
 }
 
-func nodesToFiles(nodes []*cdp.Node) []entities.File {
+func nodesToFiles(nodes []*cdp.Node, attributePosition int) []entities.File {
 	var files []entities.File
 	for _, node := range nodes {
 		var builder strings.Builder
 		builder.Grow(100)
-		link := node.Attributes[1]
+		link := node.Attributes[attributePosition]
 		for i := len(link) - 1; i >= 0; i-- {
 			if link[i] == '/' {
 				break
