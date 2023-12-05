@@ -2,16 +2,15 @@ package database
 
 import (
 	"errors"
-	"os"
+	"parse/iternal/config"
+	"parse/pkg/entities"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-
-	"parse/iternal/entities"
 )
 
-func FindAllChanges(files []entities.File) ([]entities.MessageChange, error) {
-	db, err := gorm.Open(postgres.Open(os.Getenv("PATH_TO_DATABASE")), &gorm.Config{})
+func FindAllChanges(files []entities.FileJSON) ([]entities.MessageChange, error) {
+	db, err := gorm.Open(postgres.Open(config.FilesDatabasePath), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -19,7 +18,7 @@ func FindAllChanges(files []entities.File) ([]entities.MessageChange, error) {
 	if err != nil {
 		return nil, err
 	}
-	filesDB := fromFileToFileDB(files)
+	filesDB := convertToFileDB(files)
 	messageChanges := make([]entities.MessageChange, 0)
 	for _, f := range filesDB {
 		var foundFile entities.FileDB
@@ -49,11 +48,11 @@ func FindAllChanges(files []entities.File) ([]entities.MessageChange, error) {
 
 }
 
-func fromFileToFileDB(files []entities.File) []entities.FileDB {
+func convertToFileDB(files []entities.FileJSON) []entities.FileDB {
 	filesDB := make([]entities.FileDB, 0)
 
 	for _, f := range files {
-		filesDB = append(filesDB, *entities.NewFileDB(f.RenderedName.Name, f.ReleaseDate, f.ModifiedDate, f.ACF.Description, f.ACF.Notes, f.ACF.Link))
+		filesDB = append(filesDB, *entities.NewFileDB(&f))
 	}
 	return filesDB
 }

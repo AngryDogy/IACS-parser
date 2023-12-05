@@ -3,32 +3,28 @@ package parse
 import (
 	"context"
 	"net/url"
+	"parse/pkg/entities"
+	"parse/pkg/httpreq"
 	"strconv"
 	"strings"
 
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
 
-	"parse/iternal/entities"
-	"parse/iternal/httpreq"
+	"parse/iternal/config"
 	"parse/iternal/logger"
+	"parse/iternal/util"
 )
 
-const ResolutionsURL = "https://iacs.flumeserver.co.za/wp-json/wp/v2/publications?sections=?&per_page=10&page=?&status=publish&orderby=menu_order&order=asc&acf_format=standard"
-
-const ProceduresURL = "https://iacs.org.uk/membership/procedures"
-
-const PositionPapersURL = "https://iacs.org.uk/about-us/position-papers"
-
-func GetResolutions() ([]entities.File, error) {
+func GetResolutions() ([]entities.FileJSON, error) {
 	logger.InfoLogger.Println("Started collecting resolutions")
-	currentURL, err := url.Parse(ResolutionsURL)
+	currentURL, err := url.Parse(config.ResolutionsURL)
 	if err != nil {
 		return nil, err
 	}
 	values := currentURL.Query()
-	files := make([]entities.File, 0)
-	for section := 10; section <= 11; section++ {
+	files := make([]entities.FileJSON, 0)
+	for section := 1; section <= 100; section++ {
 		values.Set("sections", strconv.Itoa(section))
 		size := len(files)
 		for page := 1; ; page++ {
@@ -48,13 +44,13 @@ func GetResolutions() ([]entities.File, error) {
 	return files, nil
 }
 
-func GetProcedures() ([]entities.File, error) {
+func GetProcedures() ([]entities.FileJSON, error) {
 	logger.InfoLogger.Println("Started collecting procedures")
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
 	var nodes []*cdp.Node
 	err := chromedp.Run(ctx,
-		chromedp.Navigate(ProceduresURL),
+		chromedp.Navigate(config.ProceduresURL),
 		chromedp.Nodes(`//a[contains(., 'DOWNLOAD FILE')]`, &nodes),
 	)
 	if err != nil {
@@ -64,13 +60,13 @@ func GetProcedures() ([]entities.File, error) {
 	return nodesToFiles(nodes, 1), nil
 }
 
-func GetPositionPapers() ([]entities.File, error) {
+func GetPositionPapers() ([]entities.FileJSON, error) {
 	logger.InfoLogger.Println("Started collecting position papers")
 	ctx, cancel := chromedp.NewContext(context.Background())
 	defer cancel()
 	var nodes []*cdp.Node
 	err := chromedp.Run(ctx,
-		chromedp.Navigate(PositionPapersURL),
+		chromedp.Navigate(config.PositionPapersURL),
 		chromedp.Nodes(`//a[contains(@title, 'IACS')]`, &nodes),
 	)
 	if err != nil {
@@ -80,8 +76,8 @@ func GetPositionPapers() ([]entities.File, error) {
 	return nodesToFiles(nodes, 3), nil
 }
 
-func nodesToFiles(nodes []*cdp.Node, attributePosition int) []entities.File {
-	var files []entities.File
+func nodesToFiles(nodes []*cdp.Node, attributePosition int) []entities.FileJSON {
+	var files []entities.FileJSON
 	for _, node := range nodes {
 		var builder strings.Builder
 		builder.Grow(100)
@@ -92,16 +88,8 @@ func nodesToFiles(nodes []*cdp.Node, attributePosition int) []entities.File {
 			}
 			builder.WriteByte(link[i])
 		}
-		name := reverse(builder.String())
-		files = append(files, *entities.NewFile(name, link))
+		name := util.Reverse(builder.String())
+		files = append(files, *entities.NewFileJSON(name, link))
 	}
 	return files
-}
-
-func reverse(s string) string {
-	runes := []rune(s)
-	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
-		runes[i], runes[j] = runes[j], runes[i]
-	}
-	return string(runes)
 }

@@ -3,18 +3,17 @@ package main
 import (
 	"fmt"
 	"os"
-	"parse/iternal/entities"
+	"parse/iternal/config"
+	"parse/pkg/database"
+	"parse/pkg/entities"
+	"parse/pkg/parse"
 
-	"github.com/joho/godotenv"
-
-	"parse/iternal/database"
 	"parse/iternal/logger"
-	"parse/iternal/parse"
 )
 
 func main() {
 
-	err := godotenv.Load()
+	err := config.InitConfig()
 	if err != nil {
 		logger.ErrorLogger.Println("Can't load env variables!")
 		os.Exit(1)
@@ -38,7 +37,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	allFiles := make([]entities.File, 0)
+	allFiles := make([]entities.FileJSON, 0)
 	for _, f := range positionPapersFiles {
 		allFiles = append(allFiles, f)
 	}

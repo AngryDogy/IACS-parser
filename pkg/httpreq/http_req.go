@@ -4,12 +4,11 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
-
-	"parse/iternal/entities"
+	"parse/pkg/entities"
 )
 
-func GetFilesRequest(url string) ([]entities.File, error) {
-	var files []entities.File
+func GetFilesRequest(url string) ([]entities.FileJSON, error) {
+	var files []entities.FileJSON
 	client := &http.Client{}
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
