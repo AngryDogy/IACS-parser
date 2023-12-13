@@ -3,8 +3,6 @@ package parse
 import (
 	"context"
 	"net/url"
-	"parse/pkg/entities"
-	"parse/pkg/httpreq"
 	"strconv"
 	"strings"
 
@@ -14,6 +12,8 @@ import (
 	"parse/iternal/config"
 	"parse/iternal/logger"
 	"parse/iternal/util"
+	"parse/pkg/entities"
+	"parse/pkg/httpreq"
 )
 
 func GetResolutions() ([]entities.FileJSON, error) {
@@ -24,7 +24,7 @@ func GetResolutions() ([]entities.FileJSON, error) {
 	}
 	values := currentURL.Query()
 	files := make([]entities.FileJSON, 0)
-	for section := 1; section <= 100; section++ {
+	for section := 10; section <= 12; section++ {
 		values.Set("sections", strconv.Itoa(section))
 		size := len(files)
 		for page := 1; ; page++ {

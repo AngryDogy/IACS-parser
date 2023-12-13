@@ -28,21 +28,22 @@ type FileDB struct {
 	FutureLink        string
 }
 
-type MessageChange struct {
-	Name        string
-	Description string
-	Notes       string
-	Link        string
-	Changes     string
+type ChangeMessage struct {
+	FileName string
+	Content  string
 }
 
-func NewMessageChange(name, description, notes, link, changes string) *MessageChange {
-	message := new(MessageChange)
-	message.Name = name
-	message.Description = description
-	message.Notes = notes
-	message.Link = link
-	message.Changes = changes
+func NewMessage(fileName string) *ChangeMessage {
+	message := new(ChangeMessage)
+	message.FileName = fileName
+	return message
+
+}
+
+func NewMessageWithContent(fileName, content string) *ChangeMessage {
+	message := new(ChangeMessage)
+	message.FileName = fileName
+	message.Content = content
 	return message
 }
 
@@ -52,6 +53,7 @@ func NewFileDB(fileJSON *FileJSON) *FileDB {
 	fileDB.Description = fileJSON.ACF.Description
 	fileDB.Notes = fileJSON.ACF.Notes
 	fileDB.Link = fileJSON.ACF.Link
+	fileDB.FutureName = fileJSON.ACF.FutureName
 	fileDB.FutureDescription = fileJSON.ACF.FutureDescription
 	fileDB.FutureNotes = fileJSON.ACF.FutureNotes
 	fileDB.FutureLink = fileJSON.ACF.FutureLink

@@ -6,10 +6,12 @@ import (
 )
 
 var (
-	FilesDatabasePath string
-	ResolutionsURL    string
-	ProceduresURL     string
-	PositionPapersURL string
+	FilesDatabasePath         string
+	ResolutionsURL            string
+	ProceduresURL             string
+	PositionPapersURL         string
+	NotificationEmailAddress  string
+	NotificationEmailPassword string
 )
 
 func InitConfig() error {
@@ -21,5 +23,7 @@ func InitConfig() error {
 	ResolutionsURL = os.Getenv("RESOLUTIONS_URL")
 	ProceduresURL = os.Getenv("PROCEDURES_URL")
 	PositionPapersURL = os.Getenv("POSITION_PAPERS_URL")
+	NotificationEmailAddress = os.Getenv("NOTIFICATION_EMAIL_ADDRESS")
+	NotificationEmailPassword = os.Getenv("NOTIFICATION_EMAIL_PASSWORD")
 	return nil
 }

@@ -1,14 +1,14 @@
 package main
 
 import (
-	"fmt"
 	"os"
+	"parse/pkg/email"
+
 	"parse/iternal/config"
+	"parse/iternal/logger"
 	"parse/pkg/database"
 	"parse/pkg/entities"
 	"parse/pkg/parse"
-
-	"parse/iternal/logger"
 )
 
 func main() {
@@ -18,7 +18,6 @@ func main() {
 		logger.ErrorLogger.Println("Can't load env variables!")
 		os.Exit(1)
 	}
-
 	logger.InfoLogger.Println("Parser started working")
 
 	positionPapersFiles, err := parse.GetPositionPapers()
@@ -49,13 +48,22 @@ func main() {
 	for _, f := range resolutionFiles {
 		allFiles = append(allFiles, f)
 	}
-	messageChanges, err := database.FindAllChanges(allFiles)
+
+	allFiles[40].ACF.FutureName = "edite 1.0"
+	allFiles[40].ACF.FutureLink = "http:/localhost:80180"
+	allFiles[41].ACF.Description = "was deleted"
+	allFiles[41].ACF.Notes = "would be added new soon 2.0"
+	messages, err := database.FindAllChanges(allFiles)
 	if err != nil {
 		logger.ErrorLogger.Printf("An error occurred while working with database! %s\n", err)
 		os.Exit(1)
 	}
-	for _, m := range messageChanges {
-		fmt.Println(m.Name)
+
+	if len(messages) != 0 {
+		logger.InfoLogger.Printf("Changes were found: %d", len(messages))
+		email.SendNotificationEmail(messages)
+	} else {
+		logger.InfoLogger.Println("Changes weren't found")
 	}
 
 	logger.InfoLogger.Println("Parser finished working")
