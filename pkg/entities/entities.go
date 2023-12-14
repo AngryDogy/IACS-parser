@@ -28,23 +28,35 @@ type FileDB struct {
 	FutureLink        string
 }
 
-type ChangeMessage struct {
-	FileName string
-	Content  string
+type ChangedFile struct {
+	Name              string `json:"name"`
+	Description       string `json:"description"`
+	Notes             string `json:"notes"`
+	Link              string `json:"link"`
+	FutureName        string `json:"futureName"`
+	FutureDescription string `json:"futureDescription"`
+	FutureNotes       string `json:"futureNotes"`
+	FutureLink        string `json:"futureLink"`
+	Changes           string `json:"changes"`
 }
 
-func NewMessage(fileName string) *ChangeMessage {
-	message := new(ChangeMessage)
-	message.FileName = fileName
-	return message
-
+type Email struct {
+	Email string `gorm:"primaryKey"`
 }
 
-func NewMessageWithContent(fileName, content string) *ChangeMessage {
-	message := new(ChangeMessage)
-	message.FileName = fileName
-	message.Content = content
-	return message
+func NewChangedFile(fileDB *FileDB, changes string) *ChangedFile {
+	changedFile := new(ChangedFile)
+	changedFile.Name = fileDB.Name
+	changedFile.Description = fileDB.Description
+	changedFile.Notes = fileDB.Notes
+	changedFile.Link = fileDB.Link
+	changedFile.FutureName = fileDB.FutureName
+	changedFile.FutureDescription = fileDB.FutureDescription
+	changedFile.FutureNotes = fileDB.FutureNotes
+	changedFile.FutureLink = fileDB.FutureLink
+	changedFile.Changes = changes
+	return changedFile
+
 }
 
 func NewFileDB(fileJSON *FileJSON) *FileDB {
@@ -59,7 +71,6 @@ func NewFileDB(fileJSON *FileJSON) *FileDB {
 	fileDB.FutureLink = fileJSON.ACF.FutureLink
 	return fileDB
 }
-
 func NewFileJSON(name, link string) *FileJSON {
 	file := new(FileJSON)
 	file.RenderedName = new(Rendered)

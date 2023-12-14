@@ -2,11 +2,11 @@ package main
 
 import (
 	"os"
-	"parse/pkg/email"
-
 	"parse/iternal/config"
 	"parse/iternal/logger"
+	"parse/pkg/csv"
 	"parse/pkg/database"
+	"parse/pkg/email"
 	"parse/pkg/entities"
 	"parse/pkg/parse"
 )
@@ -48,20 +48,24 @@ func main() {
 	for _, f := range resolutionFiles {
 		allFiles = append(allFiles, f)
 	}
-
-	allFiles[40].ACF.FutureName = "edite 1.0"
-	allFiles[40].ACF.FutureLink = "http:/localhost:80180"
-	allFiles[41].ACF.Description = "was deleted"
-	allFiles[41].ACF.Notes = "would be added new soon 2.0"
-	messages, err := database.FindAllChanges(allFiles)
+	changedFiles, err := database.FindAllChanges(allFiles)
 	if err != nil {
 		logger.ErrorLogger.Printf("An error occurred while working with database! %s\n", err)
 		os.Exit(1)
 	}
 
-	if len(messages) != 0 {
-		logger.InfoLogger.Printf("Changes were found: %d", len(messages))
-		email.SendNotificationEmail(messages)
+	if len(changedFiles) != 0 {
+		err := csv.ConvertToCSV(changedFiles)
+		if err != nil {
+			logger.ErrorLogger.Printf("An error occurred while saving changes to csv file! %s\n", err)
+			os.Exit(1)
+		}
+		logger.InfoLogger.Printf("Changes were found: %d", len(changedFiles))
+		err = email.SendNotificationEmail()
+		if err != nil {
+			logger.ErrorLogger.Printf("An error occurred while trying to send notification messages! %s\n", err)
+			os.Exit(1)
+		}
 	} else {
 		logger.InfoLogger.Println("Changes weren't found")
 	}
