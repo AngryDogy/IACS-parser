@@ -4,6 +4,7 @@ import (
 	"os"
 	"parse/iternal/config"
 	"parse/iternal/logger"
+	"parse/iternal/util"
 	"parse/pkg/csv"
 	"parse/pkg/database"
 	"parse/pkg/email"
@@ -48,6 +49,9 @@ func main() {
 	for _, f := range resolutionFiles {
 		allFiles = append(allFiles, f)
 	}
+
+	util.CleanFromTags(&allFiles)
+
 	changedFiles, err := database.FindAllChanges(allFiles)
 	if err != nil {
 		logger.ErrorLogger.Printf("An error occurred while working with database! %s\n", err)

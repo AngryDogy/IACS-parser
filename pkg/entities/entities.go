@@ -58,7 +58,14 @@ func NewChangedFile(fileDB *FileDB, changes string) *ChangedFile {
 	return changedFile
 
 }
-
+func NewFileJSON(name, link string) *FileJSON {
+	file := new(FileJSON)
+	file.RenderedName = new(Rendered)
+	file.RenderedName.Name = name
+	file.ACF = new(ACF)
+	file.ACF.Link = link
+	return file
+}
 func NewFileDB(fileJSON *FileJSON) *FileDB {
 	fileDB := new(FileDB)
 	fileDB.Name = fileJSON.RenderedName.Name
@@ -70,13 +77,4 @@ func NewFileDB(fileJSON *FileJSON) *FileDB {
 	fileDB.FutureNotes = fileJSON.ACF.FutureNotes
 	fileDB.FutureLink = fileJSON.ACF.FutureLink
 	return fileDB
-}
-func NewFileJSON(name, link string) *FileJSON {
-	file := new(FileJSON)
-	file.RenderedName = new(Rendered)
-	file.RenderedName.Name = name
-	file.ACF = new(ACF)
-	file.ACF.Link = link
-	return file
-
 }

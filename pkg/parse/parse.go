@@ -24,7 +24,7 @@ func GetResolutions() ([]entities.FileJSON, error) {
 	}
 	values := currentURL.Query()
 	files := make([]entities.FileJSON, 0)
-	for section := 10; section <= 12; section++ {
+	for section := 10; section <= 100; section++ {
 		values.Set("sections", strconv.Itoa(section))
 		size := len(files)
 		for page := 1; ; page++ {
