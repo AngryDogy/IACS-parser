@@ -51,7 +51,6 @@ func main() {
 	}
 
 	util.CleanFromTags(&allFiles)
-
 	changedFiles, err := database.FindAllChanges(allFiles)
 	if err != nil {
 		logger.ErrorLogger.Printf("An error occurred while working with database! %s\n", err)

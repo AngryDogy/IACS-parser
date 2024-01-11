@@ -13,16 +13,17 @@ func ConvertToCSV(changeFiles []*entities.ChangedFile) error {
 	}
 	defer file.Close()
 	writer := csv.NewWriter(file)
+	writer.Comma = ';'
 	defer writer.Flush()
-	header := []string{"Название",
-		"Описание",
-		"Доп. описание",
-		"Ссылка",
-		"Будущее название файла",
-		"Будущее описание файла",
-		"Будущее доп. описание файла",
-		"Будущая ссылка на файл",
-		"Изменения"}
+	header := []string{"Name",
+		"Description",
+		"Notes",
+		"Link",
+		"Future name",
+		"Future description",
+		"Future notes",
+		"Future link",
+		"Changes"}
 	writer.Write(header)
 	for _, file := range changeFiles {
 		err := writer.Write([]string{file.Name,

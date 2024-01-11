@@ -23,7 +23,7 @@ func SendNotificationEmail() error {
 		m.SetHeader("From", config.NotificationEmailAddress)
 		m.SetHeader("To", e.Email)
 		m.SetHeader("Subject", "Изменения на сайте МАКО")
-		m.SetBody("text/html", "Изменение на сайте МАКО были зафиксированы")
+		m.SetBody("text/html", "Изменения на сайте МАКО были зафиксированы")
 		if _, err := os.Stat("changes.csv"); errors.Is(err, os.ErrNotExist) {
 			return err
 		}

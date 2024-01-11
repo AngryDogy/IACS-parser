@@ -28,7 +28,7 @@ func FindAllChanges(files []entities.FileJSON) ([]*entities.ChangedFile, error) 
 		result := db.Where("name = ?", f.Name).First(&foundFile)
 		if errors.As(result.Error, &gorm.ErrRecordNotFound) {
 			db.Save(&f)
-			messages = append(messages, entities.NewChangedFile(&f, "Новый файл"))
+			messages = append(messages, entities.NewChangedFile(&f, "New file"))
 		} else {
 			if !reflect.DeepEqual(foundFile, f) {
 				db.Model(&entities.FileDB{}).Where("name = ?", foundFile.Name).
@@ -52,25 +52,25 @@ func findDiffs(prevFile, currentFile *entities.FileDB) *entities.ChangedFile {
 	var builder strings.Builder
 	builder.Grow(1000)
 	if prevFile.Description != currentFile.Description {
-		builder.WriteString("изменено описание файла, ")
+		builder.WriteString("description changed, ")
 	}
 	if prevFile.Notes != currentFile.Notes {
-		builder.WriteString("изменено дополнительное описание файла, ")
+		builder.WriteString("notes changed, ")
 	}
 	if prevFile.Link != currentFile.Link {
-		builder.WriteString("изменена ссылка на файл, ")
+		builder.WriteString("link changed, ")
 	}
 	if prevFile.FutureName != currentFile.FutureName {
-		builder.WriteString("изменено название будущего файла, ")
+		builder.WriteString("future name changed, ")
 	}
 	if prevFile.FutureDescription != currentFile.FutureDescription {
-		builder.WriteString("изменено описание будущего файла, ")
+		builder.WriteString("future description changed, ")
 	}
 	if prevFile.FutureNotes != currentFile.FutureNotes {
-		builder.WriteString("изменено дополнительное описание будущего файла, ")
+		builder.WriteString("future notes changed, ")
 	}
 	if prevFile.FutureLink != currentFile.FutureLink {
-		builder.WriteString("изменена ссылка на будущий файл, ")
+		builder.WriteString("future link changed, ")
 	}
 	return entities.NewChangedFile(currentFile, builder.String())
 }
