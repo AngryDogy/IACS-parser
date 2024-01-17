@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  parser:
+    image: goparse
+    environment:
+      - PATH_TO_FILE_DATABASE=postgresql://postgres:postgres@postgres:5432/postgres
+      - RESOLUTIONS_URL=https://iacs.flumeserver.co.za/wp-json/wp/v2/publications?sections=?&per_page=10&page=?&status=publish&orderby=menu_order&order=asc&acf_format=standard
+      - PROCEDURES_URL=https://iacs.org.uk/membership/procedures
+      - POSITION_PAPERS_URL=https://iacs.org.uk/about-us/position-papers
+      - NOTIFICATION_EMAIL_ADDRESS=vladislavhober@gmail.com
+      - NOTIFICATION_EMAIL_PASSWORD=hrsz ttmu rdor trjc
+      - EMAILS_TO_NOTIFY=vladhober@mail.ru,vladhober3@mail.ru
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres

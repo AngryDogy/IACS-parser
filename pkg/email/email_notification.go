@@ -7,21 +7,15 @@ import (
 	"os"
 	"parse/iternal/config"
 	"parse/iternal/logger"
-	"parse/pkg/database"
 )
 
 func SendNotificationEmail() error {
-
-	emails, err := database.GetAllEmails()
-	if err != nil {
-		return err
-	}
 	d := gomail.NewDialer("smtp.gmail.com", 587, config.NotificationEmailAddress, config.NotificationEmailPassword)
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
-	for _, e := range emails {
+	for _, e := range config.EmailsToNotify {
 		m := gomail.NewMessage()
 		m.SetHeader("From", config.NotificationEmailAddress)
-		m.SetHeader("To", e.Email)
+		m.SetHeader("To", e)
 		m.SetHeader("Subject", "Изменения на сайте МАКО")
 		m.SetBody("text/html", "Изменения на сайте МАКО были зафиксированы")
 		if _, err := os.Stat("changes.csv"); errors.Is(err, os.ErrNotExist) {
