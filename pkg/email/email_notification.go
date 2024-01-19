@@ -25,7 +25,7 @@ func SendNotificationEmail() error {
 		if err := d.DialAndSend(m); err != nil {
 			logger.ErrorLogger.Printf("An error occurred while sending a message! %s\n", err)
 		}
-		logger.InfoLogger.Printf("Notification message was sent to %s", e)
+		logger.InfoLogger.Printf("Notification message was sent to %s\n", e)
 	}
 
 	return nil
