@@ -24,8 +24,10 @@ func SendNotificationEmail() error {
 		m.Attach("changes.csv")
 		if err := d.DialAndSend(m); err != nil {
 			logger.ErrorLogger.Printf("An error occurred while sending a message! %s\n", err)
+		} else {
+			logger.InfoLogger.Printf("Notification message was sent to %s\n", e)
 		}
-		logger.InfoLogger.Printf("Notification message was sent to %s\n", e)
+
 	}
 
 	return nil

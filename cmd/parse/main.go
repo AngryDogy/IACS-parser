@@ -51,6 +51,7 @@ func main() {
 	}
 
 	util.CleanFromTags(&allFiles)
+	logger.InfoLogger.Printf("Files were collected: %d \n", len(allFiles))
 	changedFiles, err := database.FindAllChanges(allFiles)
 	if err != nil {
 		logger.ErrorLogger.Printf("An error occurred while working with database! %s\n", err)
@@ -63,14 +64,14 @@ func main() {
 			logger.ErrorLogger.Printf("An error occurred while saving changes to csv file! %s\n", err)
 			os.Exit(1)
 		}
-		logger.InfoLogger.Printf("Changes were found: %d", len(changedFiles))
+		logger.InfoLogger.Printf("Changes have been found: %d", len(changedFiles))
 		err = email.SendNotificationEmail()
 		if err != nil {
 			logger.ErrorLogger.Printf("An error occurred while trying to send notification messages! %s\n", err)
 			os.Exit(1)
 		}
 	} else {
-		logger.InfoLogger.Println("Changes weren't found")
+		logger.InfoLogger.Println("Changes have been not found")
 	}
 
 	logger.InfoLogger.Println("Parser finished working")
