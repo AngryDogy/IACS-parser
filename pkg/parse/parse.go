@@ -9,9 +9,9 @@ import (
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
 
-	"parse/iternal/config"
-	"parse/iternal/logger"
-	"parse/iternal/util"
+	"parse/internal/config"
+	"parse/internal/logger"
+	"parse/internal/util"
 	"parse/pkg/entities"
 	"parse/pkg/httpreq"
 )

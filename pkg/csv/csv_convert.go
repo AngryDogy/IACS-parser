@@ -6,8 +6,8 @@ import (
 	"parse/pkg/entities"
 )
 
-func ConvertToCSV(changeFiles []*entities.ChangedFile) error {
-	file, err := os.Create("changes.csv")
+func ConvertToCSV(changeFiles []*entities.ChangedFile, nameCSV string) error {
+	file, err := os.Create(nameCSV)
 	if err != nil {
 		return err
 	}

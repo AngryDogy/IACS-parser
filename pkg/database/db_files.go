@@ -2,17 +2,24 @@ package database
 
 import (
 	"errors"
+	"fmt"
+	"os"
 	"reflect"
 	"strings"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"parse/iternal/config"
+	"parse/internal/config"
 	"parse/pkg/entities"
 )
 
-func FindAllChanges(files []entities.FileJSON) ([]*entities.ChangedFile, error) {
+func FindAllChanges(files []entities.FileJSON, changesInfoFileName string) ([]*entities.ChangedFile, error) {
+	changesInfoFile, err := os.Create(changesInfoFileName)
+	if err != nil {
+		return nil, err
+	}
+	defer changesInfoFile.Close()
 	db, err := gorm.Open(postgres.Open(config.FilesDatabasePath), &gorm.Config{})
 	if err != nil {
 		return nil, err
@@ -22,13 +29,14 @@ func FindAllChanges(files []entities.FileJSON) ([]*entities.ChangedFile, error) 
 		return nil, err
 	}
 	filesDB := convertToFileDB(files)
-	messages := make([]*entities.ChangedFile, 0)
+	changedFiles := make([]*entities.ChangedFile, 0)
 	for _, f := range filesDB {
 		var foundFile entities.FileDB
 		result := db.Where("name = ?", f.Name).First(&foundFile)
 		if errors.As(result.Error, &gorm.ErrRecordNotFound) {
 			db.Save(&f)
-			messages = append(messages, entities.NewChangedFile(&f, "New file"))
+			changedFiles = append(changedFiles, entities.NewChangedFile(&f, "New file"))
+			changesInfoFile.WriteString(fmt.Sprintf("New file was added: %s\n\n", f.Name))
 		} else {
 			if !reflect.DeepEqual(foundFile, f) {
 				db.Model(&entities.FileDB{}).Where("name = ?", foundFile.Name).
@@ -39,40 +47,63 @@ func FindAllChanges(files []entities.FileJSON) ([]*entities.ChangedFile, error) 
 					Update("future_description", f.FutureDescription).
 					Update("future_notes", f.FutureNotes).
 					Update("future_link", f.FutureLink)
-				messages = append(messages, findDiffs(&foundFile, &f))
+				changedFiles = append(changedFiles, entities.NewChangedFile(&f, findDiffs(&foundFile, &f, changesInfoFile)))
 			}
 
 		}
 	}
-	return messages, nil
+	return changedFiles, nil
 
 }
 
-func findDiffs(prevFile, currentFile *entities.FileDB) *entities.ChangedFile {
+func findDiffs(prevFile, currentFile *entities.FileDB, changesInfoFile *os.File) string {
 	var builder strings.Builder
 	builder.Grow(1000)
+	changesInfoFile.WriteString(fmt.Sprintf("Diffs for %s file\n", currentFile.Name))
 	if prevFile.Description != currentFile.Description {
+		changesInfoFile.WriteString("Description was changed!\n")
+		changesInfoFile.WriteString(fmt.Sprintf("Old: %s\n", prevFile.Description))
+		changesInfoFile.WriteString(fmt.Sprintf("New: %s\n", currentFile.Description))
 		builder.WriteString("description changed, ")
 	}
 	if prevFile.Notes != currentFile.Notes {
+		changesInfoFile.WriteString("Notes were changed!\n")
+		changesInfoFile.WriteString(fmt.Sprintf("Old: %s\n", prevFile.Notes))
+		changesInfoFile.WriteString(fmt.Sprintf("New: %s\n", currentFile.Notes))
 		builder.WriteString("notes changed, ")
 	}
 	if prevFile.Link != currentFile.Link {
+		changesInfoFile.WriteString("Link was changed!\n")
+		changesInfoFile.WriteString(fmt.Sprintf("Old: %s\n", prevFile.Link))
+		changesInfoFile.WriteString(fmt.Sprintf("New: %s\n", currentFile.Link))
 		builder.WriteString("link changed, ")
 	}
 	if prevFile.FutureName != currentFile.FutureName {
+		changesInfoFile.WriteString("Future name was changed!\n")
+		changesInfoFile.WriteString(fmt.Sprintf("Old: %s\n", prevFile.FutureName))
+		changesInfoFile.WriteString(fmt.Sprintf("New: %s\n", currentFile.FutureName))
 		builder.WriteString("future name changed, ")
 	}
 	if prevFile.FutureDescription != currentFile.FutureDescription {
+		changesInfoFile.WriteString("Future description was changed!\n")
+		changesInfoFile.WriteString(fmt.Sprintf("Old: %s\n", prevFile.FutureDescription))
+		changesInfoFile.WriteString(fmt.Sprintf("New: %s\n", currentFile.FutureDescription))
 		builder.WriteString("future description changed, ")
 	}
 	if prevFile.FutureNotes != currentFile.FutureNotes {
+		changesInfoFile.WriteString("Future notes were changed!\n")
+		changesInfoFile.WriteString(fmt.Sprintf("Old: %s\n", prevFile.FutureNotes))
+		changesInfoFile.WriteString(fmt.Sprintf("New: %s\n", currentFile.FutureNotes))
 		builder.WriteString("future notes changed, ")
 	}
 	if prevFile.FutureLink != currentFile.FutureLink {
+		changesInfoFile.WriteString("Future link was changed!\n")
+		changesInfoFile.WriteString(fmt.Sprintf("Old: %s\n", prevFile.FutureLink))
+		changesInfoFile.WriteString(fmt.Sprintf("New: %s\n", currentFile.FutureLink))
 		builder.WriteString("future link changed, ")
 	}
-	return entities.NewChangedFile(currentFile, builder.String())
+	changesInfoFile.WriteString("\n")
+	return builder.String()
 }
 
 func convertToFileDB(files []entities.FileJSON) []entities.FileDB {

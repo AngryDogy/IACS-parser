@@ -5,11 +5,11 @@ import (
 	"errors"
 	"gopkg.in/gomail.v2"
 	"os"
-	"parse/iternal/config"
-	"parse/iternal/logger"
+	"parse/internal/config"
+	"parse/internal/logger"
 )
 
-func SendNotificationEmail() error {
+func SendNotificationEmail(nameTXT, nameCSV string) error {
 	d := gomail.NewDialer("smtp.gmail.com", 587, config.NotificationEmailAddress, config.NotificationEmailPassword)
 	d.TLSConfig = &tls.Config{InsecureSkipVerify: true}
 	for _, e := range config.EmailsToNotify {
@@ -18,10 +18,14 @@ func SendNotificationEmail() error {
 		m.SetHeader("To", e)
 		m.SetHeader("Subject", "Изменения на сайте МАКО")
 		m.SetBody("text/html", "Изменения на сайте МАКО были зафиксированы")
-		if _, err := os.Stat("changes.csv"); errors.Is(err, os.ErrNotExist) {
+		if _, err := os.Stat(nameCSV); errors.Is(err, os.ErrNotExist) {
 			return err
 		}
-		m.Attach("changes.csv")
+		if _, err := os.Stat(nameTXT); errors.Is(err, os.ErrNotExist) {
+			return err
+		}
+		m.Attach(nameCSV)
+		m.Attach(nameTXT)
 		if err := d.DialAndSend(m); err != nil {
 			logger.ErrorLogger.Printf("An error occurred while sending a message! %s\n", err)
 		} else {

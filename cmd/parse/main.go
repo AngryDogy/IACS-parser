@@ -2,14 +2,15 @@ package main
 
 import (
 	"os"
-	"parse/iternal/config"
-	"parse/iternal/logger"
-	"parse/iternal/util"
+	"parse/internal/config"
+	"parse/internal/logger"
+	"parse/internal/util"
 	"parse/pkg/csv"
 	"parse/pkg/database"
 	"parse/pkg/email"
 	"parse/pkg/entities"
 	"parse/pkg/parse"
+	"time"
 )
 
 func main() {
@@ -52,20 +53,22 @@ func main() {
 
 	util.CleanFromTags(&allFiles)
 	logger.InfoLogger.Printf("Files were collected: %d \n", len(allFiles))
-	changedFiles, err := database.FindAllChanges(allFiles)
+	changesTXTFileName := "changes-" + time.Now().Format("2006-01-02") + ".txt"
+	changedFiles, err := database.FindAllChanges(allFiles, changesTXTFileName)
 	if err != nil {
 		logger.ErrorLogger.Printf("An error occurred while working with database! %s\n", err)
 		os.Exit(1)
 	}
 
 	if len(changedFiles) != 0 {
-		err := csv.ConvertToCSV(changedFiles)
+		changesCSVFileName := "changes-" + time.Now().Format("2006-01-02") + ".csv"
+		err := csv.ConvertToCSV(changedFiles, changesCSVFileName)
 		if err != nil {
 			logger.ErrorLogger.Printf("An error occurred while saving changes to csv file! %s\n", err)
 			os.Exit(1)
 		}
 		logger.InfoLogger.Printf("Changes have been found: %d", len(changedFiles))
-		err = email.SendNotificationEmail()
+		err = email.SendNotificationEmail(changesTXTFileName, changesCSVFileName)
 		if err != nil {
 			logger.ErrorLogger.Printf("An error occurred while trying to send notification messages! %s\n", err)
 			os.Exit(1)
