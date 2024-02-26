@@ -2,4 +2,3 @@
 .idea/
 .env
 *.csv
-*.yaml
