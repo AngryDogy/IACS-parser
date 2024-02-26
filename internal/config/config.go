@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/joho/godotenv"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -11,6 +12,10 @@ var (
 	ResolutionsURL            string
 	ProceduresURL             string
 	PositionPapersURL         string
+	HostEmailServer           string
+	PortEmailServer           int
+	UsernameEmailServer       string
+	PasswordEmailServer       string
 	NotificationEmailAddress  string
 	NotificationEmailPassword string
 	EmailsToNotify            []string
@@ -25,6 +30,13 @@ func InitConfig() error {
 	ResolutionsURL = os.Getenv("RESOLUTIONS_URL")
 	ProceduresURL = os.Getenv("PROCEDURES_URL")
 	PositionPapersURL = os.Getenv("POSITION_PAPERS_URL")
+	HostEmailServer = os.Getenv("HOST_EMAIL_SERVER")
+	PortEmailServer, err = strconv.Atoi(os.Getenv("PORT_EMAIL_SERVER"))
+	if err != nil {
+		return err
+	}
+	UsernameEmailServer = os.Getenv("USERNAME_EMAIL_SERVER")
+	PasswordEmailServer = os.Getenv("PASSWORD_EMAIL_SERVER")
 	NotificationEmailAddress = os.Getenv("NOTIFICATION_EMAIL_ADDRESS")
 	NotificationEmailPassword = os.Getenv("NOTIFICATION_EMAIL_PASSWORD")
 	EmailsToNotify = strings.Split(os.Getenv("EMAILS_TO_NOTIFY"), ",")
