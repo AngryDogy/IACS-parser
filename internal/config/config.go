@@ -10,6 +10,8 @@ import (
 var (
 	FilesDatabasePath         string
 	ResolutionsURL            string
+	SectionNumberStart        int
+	SectionNumberEnd          int
 	ProceduresURL             string
 	PositionPapersURL         string
 	HostEmailServer           string
@@ -27,6 +29,14 @@ func InitConfig() error {
 		return err
 	}
 	FilesDatabasePath = os.Getenv("PATH_TO_FILE_DATABASE")
+	SectionNumberStart, err = strconv.Atoi(os.Getenv("SECTION_NUMBER_START"))
+	if err != nil {
+		return err
+	}
+	SectionNumberEnd, err = strconv.Atoi(os.Getenv("SECTION_NUMBER_END"))
+	if err != nil {
+		return err
+	}
 	ResolutionsURL = os.Getenv("RESOLUTIONS_URL")
 	ProceduresURL = os.Getenv("PROCEDURES_URL")
 	PositionPapersURL = os.Getenv("POSITION_PAPERS_URL")
@@ -40,5 +50,6 @@ func InitConfig() error {
 	NotificationEmailAddress = os.Getenv("NOTIFICATION_EMAIL_ADDRESS")
 	NotificationEmailPassword = os.Getenv("NOTIFICATION_EMAIL_PASSWORD")
 	EmailsToNotify = strings.Split(os.Getenv("EMAILS_TO_NOTIFY"), ",")
+
 	return nil
 }
