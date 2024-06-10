@@ -7,11 +7,11 @@ import (
 	"reflect"
 	"strings"
 
+	"parse/config"
+	"parse/entities"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-
-	"parse/internal/config"
-	"parse/pkg/entities"
 )
 
 func FindAllChanges(files []entities.FileJSON, changesInfoFileName string) ([]*entities.ChangedFile, error) {

@@ -6,14 +6,13 @@ import (
 	"strconv"
 	"strings"
 
+	"parse/config"
+	"parse/entities"
+	"parse/logger"
+	"parse/util"
+
 	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/chromedp"
-
-	"parse/internal/config"
-	"parse/internal/logger"
-	"parse/internal/util"
-	"parse/pkg/entities"
-	"parse/pkg/httpreq"
 )
 
 func GetResolutions() ([]entities.FileJSON, error) {
@@ -30,7 +29,7 @@ func GetResolutions() ([]entities.FileJSON, error) {
 		for page := 1; ; page++ {
 			values.Set("page", strconv.Itoa(page))
 			currentURL.RawQuery = values.Encode()
-			filesURL, err := httpreq.GetFilesRequest(currentURL.String())
+			filesURL, err := requestFiles(currentURL.String())
 			for _, f := range filesURL {
 				files = append(files, f)
 			}

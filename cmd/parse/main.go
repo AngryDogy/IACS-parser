@@ -2,15 +2,15 @@ package main
 
 import (
 	"os"
-	"parse/internal/config"
-	"parse/internal/logger"
-	"parse/internal/util"
-	"parse/pkg/csv"
-	"parse/pkg/database"
-	"parse/pkg/email"
-	"parse/pkg/entities"
-	"parse/pkg/parse"
 	"time"
+
+	"parse/config"
+	"parse/database"
+	"parse/email"
+	"parse/entities"
+	"parse/logger"
+	"parse/parse"
+	"parse/util"
 )
 
 func main() {
@@ -62,7 +62,7 @@ func main() {
 
 	if len(changedFiles) != 0 {
 		changesCSVFileName := "changes-" + time.Now().Format("2006-01-02") + ".csv"
-		err := csv.ConvertToCSV(changedFiles, changesCSVFileName)
+		err := util.ConvertToCSV(changedFiles, changesCSVFileName)
 		if err != nil {
 			logger.ErrorLogger.Printf("An error occurred while saving changes to csv file! %s\n", err)
 			os.Exit(1)

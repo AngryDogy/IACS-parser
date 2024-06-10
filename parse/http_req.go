@@ -1,14 +1,14 @@
-package httpreq
+package parse
 
 import (
 	"encoding/json"
 	"io"
 	"net/http"
 
-	"parse/pkg/entities"
+	"parse/entities"
 )
 
-func GetFilesRequest(url string) ([]entities.FileJSON, error) {
+func requestFiles(url string) ([]entities.FileJSON, error) {
 	var files []entities.FileJSON
 	client := &http.Client{}
 	request, err := http.NewRequest("GET", url, nil)

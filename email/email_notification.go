@@ -5,11 +5,13 @@ import (
 	"crypto/tls"
 	"errors"
 	"fmt"
-	"gopkg.in/gomail.v2"
 	"net/smtp"
 	"os"
-	"parse/internal/config"
-	"parse/internal/logger"
+
+	"parse/config"
+	"parse/logger"
+
+	"gopkg.in/gomail.v2"
 )
 
 type loginAuth struct {

@@ -4,9 +4,11 @@ type FileJSON struct {
 	RenderedName *Rendered `json:"title"`
 	ACF          *ACF      `json:"acf"`
 }
+
 type Rendered struct {
 	Name string `json:"rendered"`
 }
+
 type ACF struct {
 	Description       string `json:"publication_description"`
 	Notes             string `json:"publication_notes"`
@@ -58,6 +60,7 @@ func NewChangedFile(fileDB *FileDB, changes string) *ChangedFile {
 	return changedFile
 
 }
+
 func NewFileJSON(name, link string) *FileJSON {
 	file := new(FileJSON)
 	file.RenderedName = new(Rendered)
@@ -66,6 +69,7 @@ func NewFileJSON(name, link string) *FileJSON {
 	file.ACF.Link = link
 	return file
 }
+
 func NewFileDB(fileJSON *FileJSON) *FileDB {
 	fileDB := new(FileDB)
 	fileDB.Name = fileJSON.RenderedName.Name
