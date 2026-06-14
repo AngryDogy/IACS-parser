@@ -4,13 +4,20 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"time"
 
 	"parse/entities"
 )
 
 func requestFiles(url string) ([]entities.FileJSON, error) {
 	var files []entities.FileJSON
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+		Transport: &http.Transport{
+			TLSHandshakeTimeout:   10 * time.Second,
+			ResponseHeaderTimeout: 10 * time.Second,
+		},
+	}
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
